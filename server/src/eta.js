@@ -4,6 +4,7 @@ import { projectToRoute } from './geo.js';
 const MAX_MATCH_DIST_M = 40;
 const MAX_SAMPLE_GAP_S = 120;
 const NEW_TRIP_BACKJUMP_M = 500;
+const MIN_MOVING_MPS = 0.5;
 
 export class EtaEngine {
   constructor({ route, stops, defaultMps = 15 / 3.6, alpha = 0.3, windowMs = 1_800_000, dwellS = 20, staleMs = 60_000, hideMs = 600_000, minMps = 1 }) {
@@ -38,7 +39,9 @@ export class EtaEngine {
 
     if (prev && routeM >= prev.routeM - NEW_TRIP_BACKJUMP_M) {
       const dt = (tsMs - prev.lastTs) / 1000;
-      if (dt > 0 && dt <= MAX_SAMPLE_GAP_S && routeM >= prev.routeM) {
+      // Dwell is covered by the fixed per-stop term, so only moving samples feed segment speed.
+      const moving = !(row.speed_mps < MIN_MOVING_MPS);
+      if (moving && dt > 0 && dt <= MAX_SAMPLE_GAP_S && routeM >= prev.routeM) {
         const v = (routeM - prev.routeM) / dt;
         const i = this.segmentOf((routeM + prev.routeM) / 2);
         const e = this.seg[i];

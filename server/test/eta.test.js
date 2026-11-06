@@ -107,3 +107,13 @@ test('etasForStop sorts by eta and rejects unknown stops', () => {
   assert.deepEqual(e.etasForStop(3, T0).map((x) => x.jeep_id), [102, 101]);
   assert.throws(() => e.etasForStop(99, T0), /unknown stop/);
 });
+
+test('dwelling jeep (reported speed < 0.5 m/s) does not drag the segment speed down', () => {
+  const e = engine();
+  e.update(row(100, T0), T0);
+  e.update(row(200, T0 + 10_000), T0 + 10_000); // seeds segment 0 at 10 m/s
+  e.update(row(203, T0 + 20_000, { speed_mps: 0.1 }), T0 + 20_000); // stopped, GPS noise moved it 3 m
+  e.update(row(205, T0 + 30_000, { speed_mps: 0 }), T0 + 30_000);
+  near(e.segmentSpeed(0, T0 + 30_000), 10, 0.05);
+  near(e.jeeps(T0 + 30_000)[0].route_m, 205, 0.5); // position still updates
+});

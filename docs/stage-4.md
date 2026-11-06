@@ -23,5 +23,5 @@ sleep 90 && .venv/Scripts/python eval/eta_accuracy.py --minutes 30
 - **ETA MAE ≤ 2 min over a 30-min synthetic run: PENDING.** The first attempt (2026-11-06) was killed about 7 minutes in because the PC ran out of memory. Result to be recorded here.
 
 ## Known gaps
-- In a browser check, one ETA dropped from 4 to 2 min within 12 s. The segment EWMA may swing when jeeps are dwelling at stops. The MAE run will tell whether it needs tuning.
+- In a browser check, one ETA dropped from 4 to 2 min within 12 s. This was traced to dwell samples dragging down the segment EWMA and fixed after the final review (stopped jeeps no longer feed segment speed).
 - `GET /api/route` was added beyond the README's API list; the PWA needs it to draw the route line.

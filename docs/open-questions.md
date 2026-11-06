@@ -19,3 +19,7 @@ Items the README leaves ambiguous or blocked, with the fallback in use. Resolve 
 
 ## 3. Runtime versions
 - The README says Node 20 / Python 3.11; this machine has Node 24 / Python 3.13. Nothing used is version-specific beyond Node ≥ 20 and Python ≥ 3.11.
+
+## 4. Route doubles back near the terminal (Stage 4)
+- The OSRM route's last ~140 m runs back alongside itself. A noisy GPS point around 3780–3825 m can snap to 3885–3915 m, or the other way round. The result is a jeep briefly shown as "arriving" at the terminal, an error of tens of seconds, and only at stop 15.
+- **To fix:** when several route segments are within 40 m of a point, prefer the projection nearest the jeep's previous `route_m`. Not done yet (found in the final review). The verified route from §1 may remove the overlap anyway.
