@@ -19,7 +19,7 @@ Start the server (Stage 4), open `http://localhost:8080/` for the commuter app o
 - **Markers move and ETAs update without a reload.** PASS. Headless Chrome at 360×740: 10 markers, all 10 moved within 12 s, and the ETA list changed.
 - **Readable at 360 px, text ≥ 16 px.** PASS. Page scroll width is 360 px and the smallest computed font is 16 px.
 - **Lighthouse PWA installable.** PASS. `npx lighthouse@11` gives `installable-manifest` score 1. Version 11 is pinned because Lighthouse 12 removed the PWA category.
-- **Kill and restart the server → banner shows, app reconnects by itself: PENDING.** It was postponed so it wouldn't disturb the Stage 4 accuracy run.
+- **Kill and restart the server → banner shows, app reconnects by itself.** PASS. The server was killed at 11:48:26 and restarted at 11:48:30. Sampling the page once per second gave `....................BBB.................`: the banner was visible during the outage and cleared on reconnect without a reload.
 
 ## Known gaps
 - Leaflet loads from unpkg. The service worker caches it after the first visit, but a first-ever visit needs internet. OSM map tiles are never cached.
