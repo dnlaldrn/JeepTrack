@@ -43,6 +43,8 @@ after(async () => {
 });
 
 test('100 reports + 20 duplicates + 5 corrupted → 100 rows, 5 rejected', async () => {
+  await settle(); // drain messages the persistent test session queued since the last run
+  const before = { ...ingest.counters };
   const pubs = [];
   for (let s = 1; s <= 100; s++) pubs.push(jeep.publishAsync('jeeptrack/v1/jeep/9001/pos', report(s), { qos: 1 }));
   for (let s = 1; s <= 20; s++) pubs.push(jeep.publishAsync('jeeptrack/v1/jeep/9001/pos', report(s), { qos: 1 }));
@@ -50,8 +52,9 @@ test('100 reports + 20 duplicates + 5 corrupted → 100 rows, 5 rejected', async
   await Promise.all(pubs);
   await settle();
   assert.equal(await count(9001), 100);
-  assert.equal(ingest.counters.rejected, 5);
-  assert.equal(ingest.counters.duplicate, 20);
+  assert.equal(ingest.counters.rejected - before.rejected, 5);
+  // stored vs duplicate split depends on whether a live server is also subscribed and inserting; their sum doesn't.
+  assert.equal(ingest.counters.stored + ingest.counters.duplicate - before.stored - before.duplicate, 120);
 });
 
 test("publishing to another device's topic is refused by the broker ACL", async () => {

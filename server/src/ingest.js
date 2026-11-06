@@ -22,7 +22,11 @@ export function toRow(r, source) {
   };
 }
 
-export async function handleMessage(topic, payload, { insert, emit }) {
+// Postgres SQLSTATE classes 22 (data) and 23 (integrity, e.g. unknown jeep FK) won't succeed on retry.
+const isPermanentDbError = (e) => typeof e.code === 'string' && /^2[23]/.test(e.code);
+const defaultSleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+export async function handleMessage(topic, payload, { insert, emit, sleep = defaultSleep }) {
   const reject = (reason, extra = {}) => {
     log('reject', { topic, reason, bytes: payload.length, ...extra });
     return { received: 0, stored: 0, duplicate: 0, rejected: 1 };
@@ -39,10 +43,17 @@ export async function handleMessage(topic, payload, { insert, emit }) {
   if (reports.some((r) => r.jeep_id !== topicId)) return reject('jeep_id_mismatch');
   const rows = reports.map((r) => toRow(r, m[2] === 'pos' ? 'mqtt' : 'batch'));
   let inserted;
-  try {
-    inserted = await insert(rows);
-  } catch (e) {
-    return reject('db', { code: e.code, message: e.message });
+  // Transient DB failures (DB restarting, pool timeout) retry forever with capped backoff. The MQTT ack is held
+  // until this returns, so the broker keeps the message even if the server dies meanwhile (no loss, R2).
+  for (let attempt = 0; ; attempt++) {
+    try {
+      inserted = await insert(rows);
+      break;
+    } catch (e) {
+      if (isPermanentDbError(e)) return reject('db', { code: e.code, message: e.message });
+      log('db_retry', { topic, attempt, code: e.code, message: e.message });
+      await sleep(Math.min(30_000, 250 * 2 ** attempt));
+    }
   }
   for (const row of inserted) emit({ ...row, eta_eligible: row.accuracy_m <= ETA_MAX_ACCURACY_M });
   return { received: rows.length, stored: inserted.length, duplicate: rows.length - inserted.length, rejected: 0 };
@@ -67,19 +78,32 @@ export function startIngest({ pool, emitter, clientId = 'jeeptrack-server' }) {
     });
   });
   client.on('error', (e) => log('mqtt_error', { message: e.message }));
-  // Messages are processed in arrival order; the handler never throws.
-  let chain = Promise.resolve();
-  client.on('message', (topic, payload) => {
-    chain = chain.then(async () => {
-      const res = await handleMessage(topic, payload, {
-        insert: (rows) => insertPositions(pool, rows),
-        emit: (row) => emitter.emit('position', row),
-      });
-      for (const k in counters) counters[k] += res[k];
-    });
+  attachHandlers(client, {
+    insert: (rows) => insertPositions(pool, rows),
+    emit: (row) => emitter.emit('position', row),
+    counters,
   });
   const timer = setInterval(() => log('counters', counters), 30_000);
   timer.unref();
+  return client;
+}
+
+// Processes messages in arrival order and holds each QoS1 PUBACK until that message is processed.
+// mqtt.js emits 'message' synchronously right before calling client.handleMessage(packet, cb), and sends the
+// PUBACK when cb runs, so cb chained after the message's work acks exactly that message.
+export function attachHandlers(client, { insert, emit, counters = { received: 0, stored: 0, duplicate: 0, rejected: 0 } }) {
+  let chain = Promise.resolve();
+  client.on('message', (topic, payload) => {
+    chain = chain.then(async () => {
+      try {
+        const res = await handleMessage(topic, payload, { insert, emit });
+        for (const k in counters) counters[k] += res[k];
+      } catch (e) {
+        log('handler_error', { topic, message: e.message });
+      }
+    });
+  });
+  client.handleMessage = (_packet, cb) => { chain.then(() => cb(), cb); };
   client.counters = counters;
   client.idle = () => chain;
   return client;
