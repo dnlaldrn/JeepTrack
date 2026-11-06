@@ -12,3 +12,4 @@ infra/mosquitto/acl
 simulator/.fleet.json
 eval/out/
 .superpowers/
+*.egg-info/

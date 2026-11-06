@@ -9,7 +9,7 @@
     "start": "node --env-file=../.env src/index.js",
     "migrate": "node --env-file=../.env scripts/migrate.js",
     "test": "node --test test/*.test.js",
-    "test:integration": "node --env-file=../.env --test test/integration/"
+    "test:integration": "node --env-file=../.env --test test/integration/*.test.js"
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",
