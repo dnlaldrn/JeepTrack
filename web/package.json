@@ -1,0 +1,6 @@
+{
+  "name": "jeeptrack-web",
+  "private": true,
+  "type": "module",
+  "scripts": { "test": "node --test" }
+}
