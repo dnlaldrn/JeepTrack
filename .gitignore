@@ -2,7 +2,13 @@
 node_modules/
 .venv/
 __pycache__/
+.pytest_cache/
 .gradle/
 build/
+.kotlin/
 infra/certs/
+infra/mosquitto/passwd
+infra/mosquitto/acl
+simulator/.fleet.json
 eval/out/
+.superpowers/

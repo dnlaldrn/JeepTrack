@@ -21,7 +21,7 @@
 - The server's MQTT client also uses clean start = false and session expiry 3600 s with client ID `jeeptrack-server`, so QoS 1 messages queue while it restarts.
 - Position field names are the same snake_case names everywhere (JS/Python/vectors): `version, jeep_id, seq, ts, lat_e7, lon_e7, speed_cms, heading_cdeg, accuracy_dm, flags`. Kotlin uses the camelCase equivalents.
 - ETA constants: accuracy filter 30 m, map-match distance 40 m, EWMA α = 0.3, window 30 min, default 15 km/h, dwell 20 s, stale after 60 s, hidden after 10 min.
-- Postgres is published on host port `127.0.0.1:5433` (avoids clashing with a local 5432).
+- Postgres is published on host port `127.0.0.1:5434` (avoids clashing with a local 5432 and another project on 5433).
 - Web: text ≥ 16 px, usable at 360 px width, stale shown by text plus gray (not color alone), WS backoff 1 s → 30 s.
 
 ## Review Focus
@@ -45,7 +45,7 @@
 - Create: `docs/stage-0.md`
 
 **Interfaces:**
-- Produces `.env` variables: `MQTT_TLS_URL=mqtts://localhost:8883`, `MQTT_TEST_URL=mqtt://127.0.0.1:1883`, `MQTT_CA=../infra/certs/ca.crt`, `MQTT_SERVER_USER=jeeptrack-server`, `MQTT_SERVER_PASS`, `DATABASE_URL=postgres://jeeptrack:<pw>@127.0.0.1:5433/jeeptrack`, `POSTGRES_PASSWORD`, `HTTP_PORT=8080`, `LAN_IP`
+- Produces `.env` variables: `MQTT_TLS_URL=mqtts://localhost:8883`, `MQTT_TEST_URL=mqtt://127.0.0.1:1883`, `MQTT_CA=../infra/certs/ca.crt`, `MQTT_SERVER_USER=jeeptrack-server`, `MQTT_SERVER_PASS`, `DATABASE_URL=postgres://jeeptrack:<pw>@127.0.0.1:5434/jeeptrack`, `POSTGRES_PASSWORD`, `HTTP_PORT=8080`, `LAN_IP`
 - Produces `server/scripts/broker.js`:
   - `setBrokerPassword(user: string, pass: string): void`: runs `docker compose -f infra/docker-compose.yml exec -T mosquitto mosquitto_passwd -b /mosquitto/config/passwd <user> <pass>`
   - `writeAcl(entries: {user: string, lines: string[]}[]): void`: rewrites `infra/mosquitto/acl` entirely
@@ -54,7 +54,7 @@
 
 - [ ] **Step 1: Write `infra/gen-certs.sh`.** It makes a dev CA and a server cert into `infra/certs/` (`ca.crt`, `ca.key`, `server.crt`, `server.key`) with CN=`localhost` and SAN `DNS:localhost,IP:127.0.0.1,IP:$LAN_IP`. `LAN_IP` is read from `.env`. Run it and confirm with: `openssl x509 -in infra/certs/server.crt -noout -ext subjectAltName` lists the LAN IP.
 - [ ] **Step 2: Write `mosquitto.conf`.** It has `per_listener_settings false`, `allow_anonymous false`, `password_file /mosquitto/config/passwd` and `acl_file /mosquitto/config/acl`. Add listener 8883 with the certs and `tls_version tlsv1.3`, plus listener 1883 (the compose file maps it only to `127.0.0.1:1883`). Persistence is on, so sessions survive restarts.
-- [ ] **Step 3: Write `docker-compose.yml`.** Two services: `mosquitto` (config dir + certs mounted, healthcheck = TCP connect to 8883) and `db` (`postgis/postgis:16-3.4`, named volume, `127.0.0.1:5433:5432`, healthcheck `pg_isready`).
+- [ ] **Step 3: Write `docker-compose.yml`.** Two services: `mosquitto` (config dir + certs mounted, healthcheck = TCP connect to 8883) and `db` (`postgis/postgis:16-3.4`, named volume, `127.0.0.1:5434:5432`, healthcheck `pg_isready`).
 - [ ] **Step 4: Bootstrap the broker user.** `bootstrap-broker.js` creates an empty passwd file if it's missing and sets the `MQTT_SERVER_USER` password. It writes an ACL with `topic read jeeptrack/v1/jeep/#` for the server user, keeps any existing `jeep-*` entries (they're re-derived from the DB in Task 5), then reloads the broker.
 - [ ] **Step 5: Write `000_postgis.sql`** (`CREATE EXTENSION IF NOT EXISTS postgis;`) and `migrate.js`. Run `node --env-file=../.env scripts/migrate.js` twice. The second run applies 0 files.
 - [ ] **Step 6: Write `infra/smoke.sh`.** It checks the three Stage 0 acceptance items inside the containers:
