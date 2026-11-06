@@ -1,0 +1,302 @@
+{
+  "sms_keys": {
+    "101": "000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f",
+    "102": "abababababababababababababababababababababababababababababababab"
+  },
+  "crc_check": {
+    "ascii": "123456789",
+    "crc": 10673
+  },
+  "reports": [
+    {
+      "name": "normal Batangas point",
+      "fields": {
+        "version": 1,
+        "jeep_id": 101,
+        "seq": 1,
+        "ts": 1794000000,
+        "lat_e7": 137840000,
+        "lon_e7": 1210740000,
+        "speed_cms": 833,
+        "heading_cdeg": 18050,
+        "accuracy_dm": 50,
+        "flags": 0
+      },
+      "hex": "010065000000016aee448008374580482a6d200341468200320037cb"
+    },
+    {
+      "name": "moving fast north",
+      "fields": {
+        "version": 1,
+        "jeep_id": 101,
+        "seq": 2,
+        "ts": 1794000000,
+        "lat_e7": 137840000,
+        "lon_e7": 1210740000,
+        "speed_cms": 1111,
+        "heading_cdeg": 0,
+        "accuracy_dm": 120,
+        "flags": 0
+      },
+      "hex": "010065000000026aee448008374580482a6d2004570000007800e985"
+    },
+    {
+      "name": "negative lat/lon",
+      "fields": {
+        "version": 1,
+        "jeep_id": 101,
+        "seq": 3,
+        "ts": 1794000000,
+        "lat_e7": -337000000,
+        "lon_e7": -706000000,
+        "speed_cms": 833,
+        "heading_cdeg": 18050,
+        "accuracy_dm": 50,
+        "flags": 0
+      },
+      "hex": "010065000000036aee4480ebe9c9c0d5eb4b8003414682003200154b"
+    },
+    {
+      "name": "min negative lat/lon",
+      "fields": {
+        "version": 1,
+        "jeep_id": 101,
+        "seq": 4,
+        "ts": 1794000000,
+        "lat_e7": -900000000,
+        "lon_e7": -1800000000,
+        "speed_cms": 833,
+        "heading_cdeg": 18050,
+        "accuracy_dm": 50,
+        "flags": 0
+      },
+      "hex": "010065000000046aee4480ca5b170094b62e0003414682003200de69"
+    },
+    {
+      "name": "all max values",
+      "fields": {
+        "version": 1,
+        "jeep_id": 65535,
+        "seq": 4294967295,
+        "ts": 4294967295,
+        "lat_e7": 900000000,
+        "lon_e7": 1800000000,
+        "speed_cms": 65535,
+        "heading_cdeg": 35999,
+        "accuracy_dm": 65535,
+        "flags": 3
+      },
+      "hex": "01ffffffffffffffffffff35a4e9006b49d200ffff8c9fffff03628f"
+    },
+    {
+      "name": "all zero",
+      "fields": {
+        "version": 1,
+        "jeep_id": 0,
+        "seq": 0,
+        "ts": 0,
+        "lat_e7": 0,
+        "lon_e7": 0,
+        "speed_cms": 0,
+        "heading_cdeg": 0,
+        "accuracy_dm": 0,
+        "flags": 0
+      },
+      "hex": "01000000000000000000000000000000000000000000000000009c2f"
+    },
+    {
+      "name": "flag offline buffer",
+      "fields": {
+        "version": 1,
+        "jeep_id": 101,
+        "seq": 5,
+        "ts": 1794000000,
+        "lat_e7": 137840000,
+        "lon_e7": 1210740000,
+        "speed_cms": 833,
+        "heading_cdeg": 18050,
+        "accuracy_dm": 50,
+        "flags": 1
+      },
+      "hex": "010065000000056aee448008374580482a6d2003414682003201f126"
+    },
+    {
+      "name": "flag simulated",
+      "fields": {
+        "version": 1,
+        "jeep_id": 101,
+        "seq": 6,
+        "ts": 1794000000,
+        "lat_e7": 137840000,
+        "lon_e7": 1210740000,
+        "speed_cms": 833,
+        "heading_cdeg": 18050,
+        "accuracy_dm": 50,
+        "flags": 2
+      },
+      "hex": "010065000000066aee448008374580482a6d20034146820032029f90"
+    },
+    {
+      "name": "flags both",
+      "fields": {
+        "version": 1,
+        "jeep_id": 101,
+        "seq": 7,
+        "ts": 1794000000,
+        "lat_e7": 137840000,
+        "lon_e7": 1210740000,
+        "speed_cms": 833,
+        "heading_cdeg": 18050,
+        "accuracy_dm": 50,
+        "flags": 3
+      },
+      "hex": "010065000000076aee448008374580482a6d2003414682003203ba02"
+    },
+    {
+      "name": "other jeep",
+      "fields": {
+        "version": 1,
+        "jeep_id": 102,
+        "seq": 99,
+        "ts": 1794000000,
+        "lat_e7": 137840000,
+        "lon_e7": 1210740000,
+        "speed_cms": 833,
+        "heading_cdeg": 27000,
+        "accuracy_dm": 50,
+        "flags": 0
+      },
+      "hex": "010066000000636aee448008374580482a6d2003416978003200f4c8"
+    },
+    {
+      "name": "big seq near terminal",
+      "fields": {
+        "version": 1,
+        "jeep_id": 101,
+        "seq": 123456789,
+        "ts": 1794000000,
+        "lat_e7": 137565000,
+        "lon_e7": 1210580000,
+        "speed_cms": 0,
+        "heading_cdeg": 18050,
+        "accuracy_dm": 50,
+        "flags": 0
+      },
+      "hex": "010065075bcd156aee4480083313484827fc20000046820032005bb7"
+    }
+  ],
+  "bad_reports": [
+    {
+      "name": "corrupted crc",
+      "hex": "010065000000016aee448008374580482a6d20034146820032003734",
+      "error": "crc"
+    },
+    {
+      "name": "corrupted body byte",
+      "hex": "010065000000016aee448008364580482a6d200341468200320037cb",
+      "error": "crc"
+    },
+    {
+      "name": "version 2",
+      "hex": "020065000000016aee448008374580482a6d2003414682003200d349",
+      "error": "version"
+    },
+    {
+      "name": "27 bytes",
+      "hex": "010065000000016aee448008374580482a6d200341468200320037",
+      "error": "length"
+    },
+    {
+      "name": "29 bytes",
+      "hex": "010065000000016aee448008374580482a6d200341468200320037cb00",
+      "error": "length"
+    }
+  ],
+  "sms": [
+    {
+      "name": "normal",
+      "fields": {
+        "version": 1,
+        "jeep_id": 101,
+        "seq": 1,
+        "ts": 1794000000,
+        "lat_e7": 137840000,
+        "lon_e7": 1210740000,
+        "speed_cms": 833,
+        "heading_cdeg": 18050,
+        "accuracy_dm": 50,
+        "flags": 0
+      },
+      "text": "JT1:AQBlAAAAAWruRIAIN0WASCptIANBRoIAMgA3yw:oZBkqHf-NJE"
+    },
+    {
+      "name": "offline flag",
+      "fields": {
+        "version": 1,
+        "jeep_id": 101,
+        "seq": 5,
+        "ts": 1794000000,
+        "lat_e7": 137840000,
+        "lon_e7": 1210740000,
+        "speed_cms": 833,
+        "heading_cdeg": 18050,
+        "accuracy_dm": 50,
+        "flags": 1
+      },
+      "text": "JT1:AQBlAAAABWruRIAIN0WASCptIANBRoIAMgHxJg:Wv3uLtYEv1w"
+    },
+    {
+      "name": "jeep 102",
+      "fields": {
+        "version": 1,
+        "jeep_id": 102,
+        "seq": 99,
+        "ts": 1794000000,
+        "lat_e7": 137840000,
+        "lon_e7": 1210740000,
+        "speed_cms": 833,
+        "heading_cdeg": 27000,
+        "accuracy_dm": 50,
+        "flags": 0
+      },
+      "text": "JT1:AQBmAAAAY2ruRIAIN0WASCptIANBaXgAMgD0yA:eL_evIRNQwg"
+    }
+  ],
+  "bad_sms": [
+    {
+      "name": "bad hmac",
+      "text": "JT1:AQBlAAAAAWruRIAIN0WASCptIANBRoIAMgA3yw:oJBkqHf-NJE",
+      "error": "hmac"
+    },
+    {
+      "name": "wrong key (102 key on 101 report)",
+      "text": "JT1:AQBlAAAAAWruRIAIN0WASCptIANBRoIAMgA3yw:2L5-BnswwWs",
+      "error": "hmac"
+    },
+    {
+      "name": "wrong prefix",
+      "text": "JT2:AQBlAAAAAWruRIAIN0WASCptIANBRoIAMgA3yw:oZBkqHf-NJE",
+      "error": "prefix"
+    },
+    {
+      "name": "unknown jeep",
+      "text": "JT1:AQPnAAAAAWruRIAIN0WASCptIANBRoIAMgC1yw:q9Bf80oyNa4",
+      "error": "unknown_jeep"
+    },
+    {
+      "name": "missing hmac part",
+      "text": "JT1:AQBlAAAAAWruRIAIN0WASCptIANBRoIAMgA3yw",
+      "error": "format"
+    },
+    {
+      "name": "truncated body",
+      "text": "JT1:AQBlAAAAAWruRIAIN0WASCptIANBRoIAMgA3y:oZBkqHf-NJE",
+      "error": "format"
+    },
+    {
+      "name": "corrupted crc inside sms",
+      "text": "JT1:AQBlAAAAAWruRIAIN0WASCptIANBRoIAMgA3NA:oZBkqHf-NJE",
+      "error": "crc"
+    }
+  ]
+}
